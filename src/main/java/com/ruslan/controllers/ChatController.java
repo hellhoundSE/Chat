@@ -1,9 +1,6 @@
 package com.ruslan.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,7 +13,6 @@ import com.ruslan.model.ChatMessage;
 import com.ruslan.model.Message;
 import com.ruslan.model.User;
 import com.ruslan.service.MainService;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
 @Controller
 public class ChatController {
@@ -24,29 +20,21 @@ public class ChatController {
 	@Autowired
 	MainService mainService;
 	
-	List<String> activeUsers;
-	
-	@PostConstruct
-	public void init() {
-		activeUsers = new ArrayList<String>();
-	}
-
 	@MessageMapping("/chat.register")
 	@SendTo("/topic/public")
 	public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) 
 	{
-		
 		String username = chatMessage.getUser();
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getUser());
 		
 		if (mainService.getUserService().findUserByName(username) == null) {
 			mainService.getUserService().saveUser(new User(username));
 		}else {
-			if(activeUsers.contains(username)) {
+			if(mainService.getUserService().getActiveUsers().contains(username)) {
 				return null;
 			}
 		}
-		activeUsers.add(username);
+		mainService.getUserService().getActiveUsers().add(username);
 		return chatMessage;
 	}
 
@@ -54,14 +42,16 @@ public class ChatController {
 	@MessageMapping("/chat.leave")
 	@SendTo("/topic/public")
 	public ChatMessage leave(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-		activeUsers.remove(chatMessage.getUser());
+		mainService.getUserService().getActiveUsers().remove(chatMessage.getUser());
 		return chatMessage;
 	}
 	
 	@MessageMapping("/users")
 	@SendTo("/topic/users")
 	public String[] users(SimpMessageHeaderAccessor headerAccessor) {
-		return activeUsers.toArray(new String[activeUsers.size()]);
+		return mainService.getUserService().getActiveUsers()
+				.toArray(
+						new String[mainService.getUserService().getActiveUsers().size()]);
 	}
 	
 	@MessageMapping("/chat.send")

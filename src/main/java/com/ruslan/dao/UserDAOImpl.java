@@ -40,15 +40,6 @@ public class UserDAOImpl implements UserDAO{
 		
 	}
 
-	@Override
-	public Message getUserByMessage(Message message) {
-		
-//		Session session = entityManager.unwrap(Session.class);
-//		Query theQuery = session.createQuery("select from Task where id = :taskId");
-//		theQuery.setParameter("messageUserId", message.get);
-//		theQuery.executeUpdate();
-		return null;
-	}
 
 	@Override
 	public User findUserByName(String name) {

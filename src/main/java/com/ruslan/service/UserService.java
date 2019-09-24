@@ -14,6 +14,7 @@ public interface UserService {
 	public void saveUser(User user);
 	public User getUserById(int id);
 	public void deleteUserById(int id);
-	//public Message getUserByMessage(Message message);
 	public User findUserByName(String name);
+	public List<String> getActiveUsers();
+	
 }

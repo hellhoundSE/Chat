@@ -1,20 +1,19 @@
 package com.ruslan.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ruslan.dao.MessageDAO;
 import com.ruslan.dao.UserDAO;
-import com.ruslan.model.Message;
 import com.ruslan.model.User;
 
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @Service
@@ -22,6 +21,14 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserDAO userDAO;
+	
+	@Getter
+	List<String> activeUsers;
+	
+	@PostConstruct
+	public void init() {
+		activeUsers = new ArrayList<String>();
+	}
 	
 	@Override
 	@Transactional
@@ -41,13 +48,6 @@ public class UserServiceImpl implements UserService {
 	public void deleteUserById(int id) {
 		userDAO.deleteUserById(id);
 	}
-
-//	@Override
-//	@Transactional
-//	public Message getUserByMessage(Message message) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 	@Override
 	@Transactional
